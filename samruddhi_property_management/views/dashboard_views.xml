@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Pivot View for Properties Net Income Analysis -->
+        <record id="view_property_profitability_pivot" model="ir.ui.view">
+            <field name="name">property.property.profitability.pivot</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <pivot string="Property Economics Analysis">
+                    <field name="property_type" type="col"/>
+                    <field name="name" type="row"/>
+                    <field name="total_monthly_revenue" type="measure"/>
+                    <field name="total_monthly_cost" type="measure"/>
+                    <field name="monthly_net_income" type="measure"/>
+                    <field name="occupancy_rate" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Graph View for Profitability -->
+        <record id="view_property_profitability_graph" model="ir.ui.view">
+            <field name="name">property.property.profitability.graph</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <graph string="Monthly Net Property Income" type="bar">
+                    <field name="name"/>
+                    <field name="monthly_net_income" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Dashboard Action: Properties Overview with Profitability -->
+        <record id="action_property_dashboard_overview" model="ir.actions.act_window">
+            <field name="name">Executive Portfolio Dashboard</field>
+            <field name="res_model">property.property</field>
+            <field name="view_mode">kanban,list,pivot,graph,form</field>
+            <field name="view_id" ref="view_property_property_kanban"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Welcome to the Samruddhi Property Management Executive Dashboard!
+                </p>
+                <p>
+                    Track real-time occupancy rates, tenant collections, landlord obligations, and net property income.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu item -->
+        <menuitem id="menu_property_dashboard_action"
+                  name="Portfolio Overview"
+                  parent="menu_property_dashboard"
+                  action="action_property_dashboard_overview"
+                  sequence="10"/>
+
+        <!-- Profitability Analysis in Reports Menu -->
+        <record id="action_property_profitability_report" model="ir.actions.act_window">
+            <field name="name">Property Profitability Analysis</field>
+            <field name="res_model">property.property</field>
+            <field name="view_mode">pivot,graph,list</field>
+            <field name="view_id" ref="view_property_profitability_pivot"/>
+        </record>
+
+        <menuitem id="menu_report_profitability"
+                  name="Property Profitability Analysis"
+                  parent="menu_property_reports_parent"
+                  action="action_property_profitability_report"
+                  sequence="10"/>
+    </data>
+</odoo>

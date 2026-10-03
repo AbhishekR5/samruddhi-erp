@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_property_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2 class="text-primary border-bottom pb-2">Property Profile &amp; Occupancy Report</h2>
+                            <div class="row mt-3 mb-4">
+                                <div class="col-6">
+                                    <h4 t-field="doc.name"/>
+                                    <p class="text-muted mb-1"><strong>Code:</strong> <span t-field="doc.code"/></p>
+                                    <p class="mb-1"><strong>Type:</strong> <span t-field="doc.property_type"/></p>
+                                    <p class="mb-1"><strong>Control:</strong> <span t-field="doc.control_type"/></p>
+                                    <p t-if="doc.landlord_id" class="mb-1"><strong>Landlord:</strong> <span t-field="doc.landlord_id.name"/></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <p class="mb-1"><strong>Address:</strong></p>
+                                    <p class="mb-0" t-field="doc.street"/>
+                                    <p class="mb-0"><span t-field="doc.city"/>, <span t-field="doc.zip"/></p>
+                                    <p class="mb-1"><span t-field="doc.state_id.name"/>, <span t-field="doc.country_id.name"/></p>
+                                    <p class="mb-1"><strong>Area:</strong> <span t-field="doc.total_area"/> sq. ft. (<span t-field="doc.number_of_floors"/> Floors)</p>
+                                </div>
+                            </div>
+
+                            <!-- Metrics Box -->
+                            <div class="row text-center mb-4 p-3 bg-light rounded border">
+                                <div class="col-3">
+                                    <div class="fs-4 fw-bold text-dark"><span t-field="doc.total_units_count"/></div>
+                                    <div class="small text-muted">Total Units</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="fs-4 fw-bold text-success"><span t-field="doc.occupied_units_count"/></div>
+                                    <div class="small text-muted">Occupied Units</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="fs-4 fw-bold text-primary"><span t-field="doc.vacant_units_count"/></div>
+                                    <div class="small text-muted">Vacant Units</div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="fs-4 fw-bold text-info"><span t-field="doc.occupancy_rate"/>%</div>
+                                    <div class="small text-muted">Occupancy Rate</div>
+                                </div>
+                            </div>
+
+                            <!-- Units Table -->
+                            <h4 class="mt-4 mb-2">Unit Inventory</h4>
+                            <table class="table table-sm table-striped border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Unit Code</th>
+                                        <th>Name</th>
+                                        <th>Floor</th>
+                                        <th>Type</th>
+                                        <th>Area (sq.ft)</th>
+                                        <th>Market Rent</th>
+                                        <th>Status</th>
+                                        <th>Current Tenant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="doc.unit_ids" t-as="unit">
+                                        <td><span t-field="unit.unit_code"/></td>
+                                        <td><span t-field="unit.name"/></td>
+                                        <td><span t-field="unit.floor"/></td>
+                                        <td><span t-field="unit.unit_type"/></td>
+                                        <td><span t-field="unit.area"/></td>
+                                        <td><span t-field="unit.market_rent" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                        <td><span t-field="unit.status"/></td>
+                                        <td><span t-esc="unit.current_tenant_id.name or '-'"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Economics -->
+                            <h4 class="mt-4 mb-2">Monthly Operational Spread</h4>
+                            <table class="table table-bordered w-50">
+                                <tr>
+                                    <th>Monthly Tenant Revenue</th>
+                                    <td class="text-end text-success"><span t-field="doc.total_monthly_revenue" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                                <tr>
+                                    <th>Monthly Landlord Cost</th>
+                                    <td class="text-end text-danger"><span t-field="doc.total_monthly_cost" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th><strong>Net Monthly Spread</strong></th>
+                                    <td class="text-end fw-bold"><span t-field="doc.monthly_net_income" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Portal Home Entry -->
+        <template id="portal_my_home_property" name="Show Property Menu in Portal" inherit_id="portal.portal_my_home" priority="30">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <!-- Landlord Cards -->
+                <t t-if="request.env.user.partner_id.is_property_landlord">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="icon" t-value="'/samruddhi_property_management/static/description/icon.png'"/>
+                        <t t-set="title">Landlord Agreements</t>
+                        <t t-set="url" t-value="'/my/landlord_contracts'"/>
+                        <t t-set="placeholder_count" t-value="'landlord_contract_count'"/>
+                    </t>
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="title">Landlord Payouts</t>
+                        <t t-set="url" t-value="'/my/landlord_payments'"/>
+                        <t t-set="placeholder_count" t-value="'landlord_payment_count'"/>
+                    </t>
+                </t>
+
+                <!-- Tenant Cards -->
+                <t t-if="request.env.user.partner_id.is_property_tenant">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="title">My Tenancy Contracts</t>
+                        <t t-set="url" t-value="'/my/tenant_contracts'"/>
+                        <t t-set="placeholder_count" t-value="'tenant_contract_count'"/>
+                    </t>
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="title">Rent Dues &amp; Invoices</t>
+                        <t t-set="url" t-value="'/my/rent_schedules'"/>
+                        <t t-set="placeholder_count" t-value="'rent_schedule_count'"/>
+                    </t>
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="title">Maintenance Requests</t>
+                        <t t-set="url" t-value="'/my/maintenance_requests'"/>
+                        <t t-set="placeholder_count" t-value="'maintenance_request_count'"/>
+                    </t>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Template: Landlord Contracts -->
+        <template id="portal_my_landlord_contracts" name="My Landlord Contracts">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4">
+                    <h3>My Landlord Contracts with Samruddhi</h3>
+                    <t t-if="not contracts">
+                        <div class="alert alert-info">No contracts found under your account.</div>
+                    </t>
+                    <table t-if="contracts" class="table table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ref</th>
+                                <th>Property</th>
+                                <th>Contract Type</th>
+                                <th>Period</th>
+                                <th>Monthly Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="contracts" t-as="c">
+                                <td><span t-field="c.name"/></td>
+                                <td><span t-field="c.property_id.name"/></td>
+                                <td><span t-field="c.contract_type"/></td>
+                                <td><span t-field="c.start_date"/> to <span t-field="c.end_date"/></td>
+                                <td><span t-field="c.monthly_amount" t-options='{"widget": "monetary", "display_currency": c.currency_id}'/></td>
+                                <td><span class="badge text-bg-info"><span t-field="c.state"/></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template: Landlord Payments -->
+        <template id="portal_my_landlord_payments" name="My Landlord Payments">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4">
+                    <h3>Disbursement Schedule &amp; History</h3>
+                    <t t-if="not payments">
+                        <div class="alert alert-info">No payment records found.</div>
+                    </t>
+                    <table t-if="payments" class="table table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ref</th>
+                                <th>Period</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Disbursed</th>
+                                <th>Balance Due</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="payments" t-as="p">
+                                <td><span t-field="p.name"/></td>
+                                <td><span t-field="p.period_start"/> to <span t-field="p.period_end"/></td>
+                                <td><span t-field="p.due_date"/></td>
+                                <td><span t-field="p.amount" t-options='{"widget": "monetary", "display_currency": p.currency_id}'/></td>
+                                <td><span t-field="p.paid_amount" t-options='{"widget": "monetary", "display_currency": p.currency_id}'/></td>
+                                <td><span t-field="p.balance_amount" t-options='{"widget": "monetary", "display_currency": p.currency_id}'/></td>
+                                <td><span class="badge text-bg-secondary"><span t-field="p.state"/></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template: Tenant Contracts -->
+        <template id="portal_my_tenant_contracts" name="My Tenancy Contracts">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4">
+                    <h3>My Tenancy Contracts</h3>
+                    <t t-if="not contracts">
+                        <div class="alert alert-info">No tenancy contracts found under your profile.</div>
+                    </t>
+                    <table t-if="contracts" class="table table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Contract Ref</th>
+                                <th>Property</th>
+                                <th>Unit</th>
+                                <th>Period</th>
+                                <th>Monthly Rent</th>
+                                <th>Security Deposit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="contracts" t-as="c">
+                                <td><span t-field="c.name"/></td>
+                                <td><span t-field="c.property_id.name"/></td>
+                                <td><span t-field="c.unit_id.name"/></td>
+                                <td><span t-field="c.start_date"/> to <span t-field="c.end_date"/></td>
+                                <td><span t-field="c.monthly_rent" t-options='{"widget": "monetary", "display_currency": c.currency_id}'/></td>
+                                <td><span t-field="c.security_deposit" t-options='{"widget": "monetary", "display_currency": c.currency_id}'/></td>
+                                <td><span class="badge text-bg-primary"><span t-field="c.state"/></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template: Rent Schedules -->
+        <template id="portal_my_rent_schedules" name="My Rent Dues">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4">
+                    <h3>Rent Dues &amp; Payment History</h3>
+                    <t t-if="not schedules">
+                        <div class="alert alert-info">No rent schedules available.</div>
+                    </t>
+                    <table t-if="schedules" class="table table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Schedule Ref</th>
+                                <th>Property / Unit</th>
+                                <th>Due Date</th>
+                                <th>Amount</th>
+                                <th>Paid</th>
+                                <th>Balance Due</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="schedules" t-as="s">
+                                <td><span t-field="s.name"/></td>
+                                <td><span t-field="s.unit_id.name"/> (<span t-field="s.property_id.name"/>)</td>
+                                <td><span t-field="s.due_date"/></td>
+                                <td><span t-field="s.amount" t-options='{"widget": "monetary", "display_currency": s.currency_id}'/></td>
+                                <td><span t-field="s.paid_amount" t-options='{"widget": "monetary", "display_currency": s.currency_id}'/></td>
+                                <td><span t-field="s.balance_amount" t-options='{"widget": "monetary", "display_currency": s.currency_id}'/></td>
+                                <td><span class="badge text-bg-warning"><span t-field="s.state"/></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template: Maintenance Tickets -->
+        <template id="portal_my_maintenance_requests" name="My Maintenance Tickets">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>Maintenance Tickets</h3>
+                        <a href="/my/maintenance_requests/new" class="btn btn-primary">
+                            <i class="fa fa-plus me-1"/> Request Maintenance
+                        </a>
+                    </div>
+                    <t t-if="not tickets">
+                        <div class="alert alert-info">No maintenance tickets logged.</div>
+                    </t>
+                    <table t-if="tickets" class="table table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ticket Ref</th>
+                                <th>Title</th>
+                                <th>Unit</th>
+                                <th>Date</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="tickets" t-as="t">
+                                <td><span t-field="t.name"/></td>
+                                <td><span t-field="t.title"/></td>
+                                <td><span t-field="t.unit_id.name"/></td>
+                                <td><span t-field="t.request_date"/></td>
+                                <td><span t-field="t.priority"/></td>
+                                <td><span class="badge text-bg-info"><span t-field="t.state"/></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template: Create New Maintenance Ticket -->
+        <template id="portal_create_maintenance_request" name="New Maintenance Request">
+            <t t-call="portal.portal_layout">
+                <div class="container py-4 col-md-8 offset-md-2">
+                    <h3>Submit Maintenance Ticket</h3>
+                    <form action="/my/maintenance_requests/new" method="post" class="mt-4 border p-4 rounded bg-white shadow-sm">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-3">
+                            <label for="contract_id" class="form-label">Select Tenancy / Unit</label>
+                            <select name="contract_id" id="contract_id" class="form-select" required="required">
+                                <option value="">-- Choose Rented Unit --</option>
+                                <t t-foreach="contracts" t-as="c">
+                                    <option t-att-value="c.id">
+                                        <t t-esc="c.unit_id.name"/> (<t t-esc="c.property_id.name"/>)
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Subject / Issue Summary</label>
+                            <input type="text" name="title" id="title" class="form-control" placeholder="e.g. Bathroom plumbing leakage" required="required"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Urgency Level</label>
+                            <select name="priority" id="priority" class="form-select">
+                                <option value="1">Normal</option>
+                                <option value="2">High</option>
+                                <option value="3">Urgent / Emergency</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Detailed Description of Problem</label>
+                            <textarea name="description" id="description" rows="5" class="form-control" placeholder="Please describe the issue in detail to help technician prepare..."></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/my/maintenance_requests" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

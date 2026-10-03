@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Res Partner Form Inheritance for Landlord/Tenant fields -->
+        <record id="view_partner_property_form" model="ir.ui.view">
+            <field name="name">res.partner.property.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Smart Buttons -->
+                <div name="button_box" position="inside">
+                    <button name="action_view_landlord_contracts" type="object" class="oe_stat_button" icon="fa-handshake-o" invisible="not is_property_landlord">
+                        <field name="landlord_contract_count" widget="statinfo" string="Landlord Cont."/>
+                    </button>
+                    <button name="action_view_landlord_payments" type="object" class="oe_stat_button" icon="fa-money" invisible="not is_property_landlord">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="total_landlord_payable" widget="monetary"/></span>
+                            <span class="o_stat_text">Payable Dues</span>
+                        </div>
+                    </button>
+                    <button name="action_view_tenant_contracts" type="object" class="oe_stat_button" icon="fa-file-text-o" invisible="not is_property_tenant">
+                        <field name="tenant_contract_count" widget="statinfo" string="Tenant Cont."/>
+                    </button>
+                    <button name="action_view_rent_schedules" type="object" class="oe_stat_button" icon="fa-calculator" invisible="not is_property_tenant">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value"><field name="total_outstanding_rent" widget="monetary"/></span>
+                            <span class="o_stat_text">Outstanding Rent</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Page for Property Management details -->
+                <page name="internal_notes" position="after">
+                    <page string="Property ERP Profile" name="property_profile">
+                        <group>
+                            <group string="Classification">
+                                <field name="is_property_landlord" widget="boolean_toggle"/>
+                                <field name="is_property_tenant" widget="boolean_toggle"/>
+                            </group>
+                            <group string="Tax &amp; Identification">
+                                <field name="pan_number" placeholder="e.g. ABCDE1234F"/>
+                                <field name="gstin_number" placeholder="e.g. 27ABCDE1234F1Z5"/>
+                            </group>
+                        </group>
+                        <group string="Tenant Emergency Contact" invisible="not is_property_tenant">
+                            <group>
+                                <field name="emergency_contact_name"/>
+                                <field name="emergency_contact_phone"/>
+                                <field name="emergency_contact_relation"/>
+                            </group>
+                            <group string="Deposit Position">
+                                <field name="total_deposit_held" widget="monetary"/>
+                            </group>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+        <!-- Landlord List View -->
+        <record id="view_property_landlord_tree" model="ir.ui.view">
+            <field name="name">property.landlord.list</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <list string="Landlords">
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="pan_number"/>
+                    <field name="city"/>
+                    <field name="landlord_contract_count" string="Active Contracts"/>
+                    <field name="total_landlord_payable" widget="monetary" string="Payable Balance"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Tenant List View -->
+        <record id="view_property_tenant_tree" model="ir.ui.view">
+            <field name="name">property.tenant.list</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <list string="Tenants">
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="pan_number"/>
+                    <field name="emergency_contact_phone" optional="show"/>
+                    <field name="tenant_contract_count" string="Active Contracts"/>
+                    <field name="total_deposit_held" widget="monetary" string="Deposit Held"/>
+                    <field name="total_outstanding_rent" widget="monetary" decoration-danger="total_outstanding_rent &gt; 0" string="Outstanding Rent"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Landlords Action -->
+        <record id="action_property_landlord" model="ir.actions.act_window">
+            <field name="name">Landlords</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="domain">[('is_property_landlord', '=', True)]</field>
+            <field name="context">{'default_is_property_landlord': True, 'default_is_company': False}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_property_landlord_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+        </record>
+
+        <!-- Tenants Action -->
+        <record id="action_property_tenant" model="ir.actions.act_window">
+            <field name="name">Tenants</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="domain">[('is_property_tenant', '=', True)]</field>
+            <field name="context">{'default_is_property_tenant': True, 'default_is_company': False}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_property_tenant_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+        </record>
+
+        <!-- Menu items -->
+        <menuitem id="menu_property_landlords_list"
+                  name="Landlords Directory"
+                  parent="menu_property_landlords_parent"
+                  action="action_property_landlord"
+                  sequence="10"/>
+
+        <menuitem id="menu_property_tenants_list"
+                  name="Tenants Directory"
+                  parent="menu_property_tenants_parent"
+                  action="action_property_tenant"
+                  sequence="10"/>
+    </data>
+</odoo>

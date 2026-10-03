@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Property Summary Report -->
+        <record id="action_report_property" model="ir.actions.report">
+            <field name="name">Property Summary Report</field>
+            <field name="model">property.property</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">samruddhi_property_management.report_property_template</field>
+            <field name="report_file">samruddhi_property_management.report_property_template</field>
+            <field name="print_report_name">'Property - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_property_property"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Landlord Statement Report -->
+        <record id="action_report_landlord_statement" model="ir.actions.report">
+            <field name="name">Landlord Statement</field>
+            <field name="model">res.partner</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">samruddhi_property_management.report_landlord_statement_template</field>
+            <field name="report_file">samruddhi_property_management.report_landlord_statement_template</field>
+            <field name="print_report_name">'Landlord Statement - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Tenant Statement Report -->
+        <record id="action_report_tenant_statement" model="ir.actions.report">
+            <field name="name">Tenant Statement</field>
+            <field name="model">res.partner</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">samruddhi_property_management.report_tenant_statement_template</field>
+            <field name="report_file">samruddhi_property_management.report_tenant_statement_template</field>
+            <field name="print_report_name">'Tenant Statement - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Tenant Contract Legal Agreement -->
+        <record id="action_report_tenant_contract" model="ir.actions.report">
+            <field name="name">Rental / Lease Agreement</field>
+            <field name="model">property.tenant.contract</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">samruddhi_property_management.report_contract_template</field>
+            <field name="report_file">samruddhi_property_management.report_contract_template</field>
+            <field name="print_report_name">'Agreement - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_property_tenant_contract"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Property Profitability Report -->
+        <record id="action_report_property_profitability" model="ir.actions.report">
+            <field name="name">Property Economics &amp; Profitability</field>
+            <field name="model">property.property</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">samruddhi_property_management.report_profitability_template</field>
+            <field name="report_file">samruddhi_property_management.report_profitability_template</field>
+            <field name="print_report_name">'Profitability - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_property_property"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

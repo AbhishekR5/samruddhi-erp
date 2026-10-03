@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_tenant_statement_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="tenant">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2 class="text-primary border-bottom pb-2">Tenant Statement of Account</h2>
+                            <div class="row mt-3 mb-4">
+                                <div class="col-6">
+                                    <h4 t-field="tenant.name"/>
+                                    <p class="mb-1" t-if="tenant.pan_number"><strong>PAN:</strong> <span t-field="tenant.pan_number"/></p>
+                                    <p class="mb-1" t-if="tenant.gstin_number"><strong>GSTIN:</strong> <span t-field="tenant.gstin_number"/></p>
+                                    <p class="mb-1"><strong>Phone:</strong> <span t-field="tenant.phone"/></p>
+                                    <p class="mb-1"><strong>Email:</strong> <span t-field="tenant.email"/></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <p class="mb-1"><strong>Statement Date:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/></p>
+                                    <div class="border p-2 bg-light rounded text-end mt-2">
+                                        <div class="text-muted small">Total Outstanding Rent:</div>
+                                        <div class="fs-4 fw-bold text-danger">
+                                            <span t-field="tenant.total_outstanding_rent" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/>
+                                        </div>
+                                        <div class="text-muted small mt-1">Security Deposit Held:</div>
+                                        <div class="fw-bold text-info">
+                                            <span t-field="tenant.total_deposit_held" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contracts -->
+                            <h4 class="mt-4 mb-2">Active Tenancy Agreements</h4>
+                            <table class="table table-sm table-striped border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Contract Ref</th>
+                                        <th>Property</th>
+                                        <th>Unit</th>
+                                        <th>Period</th>
+                                        <th>Monthly Rent</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="tenant.tenant_contract_ids" t-as="contract">
+                                        <td><span t-field="contract.name"/></td>
+                                        <td><span t-field="contract.property_id.name"/></td>
+                                        <td><span t-field="contract.unit_id.name"/></td>
+                                        <td><span t-field="contract.start_date"/> to <span t-field="contract.end_date"/></td>
+                                        <td><span t-field="contract.monthly_rent" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/></td>
+                                        <td><span t-field="contract.state"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Rent Schedules -->
+                            <h4 class="mt-4 mb-2">Rent Invoices &amp; Payment Ledger</h4>
+                            <table class="table table-sm table-striped border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Schedule Ref</th>
+                                        <th>Period</th>
+                                        <th>Due Date</th>
+                                        <th>Amount Billed</th>
+                                        <th>Paid Amount</th>
+                                        <th>Balance Due</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="tenant.rent_schedule_ids" t-as="sched">
+                                        <td><span t-field="sched.name"/></td>
+                                        <td><span t-field="sched.period_start"/> to <span t-field="sched.period_end"/></td>
+                                        <td><span t-field="sched.due_date"/></td>
+                                        <td><span t-field="sched.amount" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/></td>
+                                        <td><span t-field="sched.paid_amount" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/></td>
+                                        <td><span t-field="sched.balance_amount" t-options='{"widget": "monetary", "display_currency": tenant.currency_id}'/></td>
+                                        <td><span t-field="sched.state"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

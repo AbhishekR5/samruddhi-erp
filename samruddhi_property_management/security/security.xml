@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Module Category -->
+        <record id="module_category_property_management" model="ir.module.category">
+            <field name="name">Property Management</field>
+            <field name="description">Manage properties, landlord/tenant contracts, rent schedules, and maintenance.</field>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- Odoo 19 Privilege Record -->
+        <record model="res.groups.privilege" id="res_groups_privilege_property_management">
+            <field name="name">Property Management</field>
+            <field name="category_id" ref="module_category_property_management"/>
+            <field name="sequence">25</field>
+        </record>
+
+        <!-- User Group -->
+        <record id="group_property_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="sequence">10</field>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Operational property management access (view and create maintenance, inspect properties and units).</field>
+        </record>
+
+        <!-- Finance Group -->
+        <record id="group_property_finance" model="res.groups">
+            <field name="name">Finance</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_property_user')), (4, ref('account.group_account_invoice'))]"/>
+            <field name="comment">Financial property records, rent collection, landlord payments, deposits, expenses, and profitability reports.</field>
+        </record>
+
+        <!-- Manager Group -->
+        <record id="group_property_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_property_finance'))]"/>
+            <field name="comment">Full operational access: contract approval, unit assignment, property configuration, and team management.</field>
+        </record>
+
+        <!-- Administrator Group -->
+        <record id="group_property_admin" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="sequence">40</field>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+            <field name="implied_ids" eval="[(4, ref('group_property_manager')), (4, ref('base.group_system'))]"/>
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="comment">Full system administration and configuration rights for Property Management.</field>
+        </record>
+    </data>
+</odoo>

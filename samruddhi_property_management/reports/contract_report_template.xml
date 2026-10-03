@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_contract_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="text-center mb-4">
+                                <h2><strong>TENANCY AGREEMENT</strong></h2>
+                                <h5 class="text-muted"><span t-field="doc.name"/></h5>
+                                <p t-if="doc.contract_number"><strong>Agreement No:</strong> <span t-field="doc.contract_number"/></p>
+                            </div>
+
+                            <p>This Tenancy Agreement is executed between:</p>
+                            <p><strong>LESSOR / OPERATOR:</strong> <span t-field="doc.company_id.name"/></p>
+                            <p>AND</p>
+                            <p><strong>TENANT / OCCUPANT:</strong> <span t-field="doc.tenant_id.name"/> (PAN: <span t-field="doc.tenant_id.pan_number"/>)</p>
+
+                            <h4 class="mt-4 border-bottom pb-1">1. Premises Demised</h4>
+                            <p>
+                                The Lessor hereby rents/leases to the Tenant the unit designated as <strong><span t-field="doc.unit_id.name"/></strong> 
+                                situated in <strong><span t-field="doc.property_id.name"/></strong>, located at 
+                                <span t-field="doc.property_id.street"/>, <span t-field="doc.property_id.city"/>, 
+                                <span t-field="doc.property_id.state_id.name"/>, Postal Code: <span t-field="doc.property_id.zip"/>.
+                            </p>
+
+                            <h4 class="mt-4 border-bottom pb-1">2. Term of Tenancy</h4>
+                            <p>
+                                The term of this agreement shall commence on <strong><span t-field="doc.start_date"/></strong> 
+                                and shall expire on <strong><span t-field="doc.end_date"/></strong>, with a notice period of 
+                                <strong><span t-field="doc.notice_period"/> days</strong> for either party.
+                            </p>
+
+                            <h4 class="mt-4 border-bottom pb-1">3. Financial Considerations</h4>
+                            <table class="table table-bordered w-75">
+                                <tr>
+                                    <th>Monthly Rent Receivable</th>
+                                    <td><span t-field="doc.monthly_rent" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                                <tr>
+                                    <th>Security Deposit (Escrow)</th>
+                                    <td><span t-field="doc.security_deposit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Frequency</th>
+                                    <td><span t-field="doc.payment_frequency"/> (Due on day <span t-field="doc.payment_due_day"/> of period)</td>
+                                </tr>
+                                <tr>
+                                    <th>Grace Period &amp; Late Fee</th>
+                                    <td><span t-field="doc.grace_period"/> Days Grace; Late Fee: <span t-field="doc.late_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                </tr>
+                                <tr>
+                                    <th>Annual Rent Escalation</th>
+                                    <td><span t-field="doc.rent_escalation"/>%</td>
+                                </tr>
+                            </table>
+
+                            <h4 class="mt-4 border-bottom pb-1">4. Special Terms &amp; Conditions</h4>
+                            <p t-field="doc.renewal_terms" class="text-justify"/>
+
+                            <div class="row mt-5 pt-5">
+                                <div class="col-6 text-center">
+                                    <p>______________________________________</p>
+                                    <p><strong>For <span t-field="doc.company_id.name"/></strong><br/>(Authorized Signatory)</p>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <p>______________________________________</p>
+                                    <p><strong><span t-field="doc.tenant_id.name"/></strong><br/>(Tenant)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

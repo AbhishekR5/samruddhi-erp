@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Property Sequence -->
+        <record id="seq_property_property" model="ir.sequence">
+            <field name="name">Property Sequence</field>
+            <field name="code">property.property</field>
+            <field name="prefix">PROP/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Unit Sequence -->
+        <record id="seq_property_unit" model="ir.sequence">
+            <field name="name">Unit Sequence</field>
+            <field name="code">property.unit</field>
+            <field name="prefix">UNIT/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Landlord Contract Sequence -->
+        <record id="seq_landlord_contract" model="ir.sequence">
+            <field name="name">Landlord Contract Sequence</field>
+            <field name="code">property.landlord.contract</field>
+            <field name="prefix">LC/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Tenant Contract Sequence -->
+        <record id="seq_tenant_contract" model="ir.sequence">
+            <field name="name">Tenant Contract Sequence</field>
+            <field name="code">property.tenant.contract</field>
+            <field name="prefix">TC/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Rent Schedule Sequence -->
+        <record id="seq_rent_schedule" model="ir.sequence">
+            <field name="name">Rent Schedule Sequence</field>
+            <field name="code">property.rent.schedule</field>
+            <field name="prefix">RENT/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Landlord Payment Sequence -->
+        <record id="seq_landlord_payment" model="ir.sequence">
+            <field name="name">Landlord Payment Sequence</field>
+            <field name="code">property.landlord.payment</field>
+            <field name="prefix">LPAY/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Security Deposit Sequence -->
+        <record id="seq_security_deposit" model="ir.sequence">
+            <field name="name">Security Deposit Sequence</field>
+            <field name="code">property.security.deposit</field>
+            <field name="prefix">DEP/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Property Expense Sequence -->
+        <record id="seq_property_expense" model="ir.sequence">
+            <field name="name">Property Expense Sequence</field>
+            <field name="code">property.expense</field>
+            <field name="prefix">EXP/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Maintenance Request Sequence -->
+        <record id="seq_maintenance_request" model="ir.sequence">
+            <field name="name">Maintenance Request Sequence</field>
+            <field name="code">property.maintenance.request</field>
+            <field name="prefix">MNT/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

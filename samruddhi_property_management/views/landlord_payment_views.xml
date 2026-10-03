@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_landlord_payment_tree" model="ir.ui.view">
+            <field name="name">property.landlord.payment.list</field>
+            <field name="model">property.landlord.payment</field>
+            <field name="arch" type="xml">
+                <list string="Landlord Payments" decoration-success="state == 'paid'" decoration-danger="state == 'overdue'" decoration-warning="state == 'partial'" decoration-muted="state == 'cancelled'">
+                    <field name="name"/>
+                    <field name="landlord_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id" optional="show"/>
+                    <field name="period_start"/>
+                    <field name="period_end"/>
+                    <field name="due_date"/>
+                    <field name="amount" widget="monetary" sum="Total Obligation"/>
+                    <field name="paid_amount" widget="monetary" sum="Total Disbursed"/>
+                    <field name="balance_amount" widget="monetary" sum="Total Payable Balance"/>
+                    <field name="payment_date" optional="show"/>
+                    <field name="state" widget="badge"/>
+                    <field name="move_id" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_landlord_payment_form" model="ir.ui.view">
+            <field name="name">property.landlord.payment.form</field>
+            <field name="model">property.landlord.payment</field>
+            <field name="arch" type="xml">
+                <form string="Landlord Payment">
+                    <header>
+                        <button name="action_mark_paid" type="object" string="Mark as Fully Disbursed" class="btn-primary" invisible="state in ('paid', 'cancelled')"/>
+                        <button name="action_create_vendor_bill" type="object" string="Generate Accounting Vendor Bill" class="btn-secondary" invisible="move_id != False or state == 'cancelled'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="pending,partial,paid,overdue"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Payment Reference"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Contract &amp; Landlord">
+                                <field name="contract_id"/>
+                                <field name="landlord_id"/>
+                                <field name="property_id"/>
+                                <field name="unit_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Period &amp; Due Date">
+                                <field name="period_start"/>
+                                <field name="period_end"/>
+                                <field name="due_date"/>
+                                <field name="payment_date"/>
+                            </group>
+                        </group>
+
+                        <group string="Financials">
+                            <group>
+                                <field name="amount" widget="monetary"/>
+                                <field name="paid_amount" widget="monetary"/>
+                            </group>
+                            <group>
+                                <field name="balance_amount" widget="monetary" decoration-danger="balance_amount &gt; 0"/>
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_landlord_payment_search" model="ir.ui.view">
+            <field name="name">property.landlord.payment.search</field>
+            <field name="model">property.landlord.payment</field>
+            <field name="arch" type="xml">
+                <search string="Search Landlord Payments">
+                    <field name="name"/>
+                    <field name="landlord_id"/>
+                    <field name="property_id"/>
+                    <filter string="Pending Dues" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Overdue" name="overdue" domain="[('state', '=', 'overdue')]"/>
+                    <filter string="Disbursed (Paid)" name="paid" domain="[('state', '=', 'paid')]"/>
+                    <separator/>
+                    <filter string="Landlord" name="group_landlord" domain="[]" context="{'group_by': 'landlord_id'}"/>
+                    <filter string="Property" name="group_property" domain="[]" context="{'group_by': 'property_id'}"/>
+                    <filter string="Due Month" name="group_month" domain="[]" context="{'group_by': 'due_date:month'}"/>
+                    <filter string="Status" name="group_state" domain="[]" context="{'group_by': 'state'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_landlord_payment" model="ir.actions.act_window">
+            <field name="name">Landlord Payments</field>
+            <field name="res_model">property.landlord.payment</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_landlord_payment_search"/>
+        </record>
+
+        <!-- Menu items -->
+        <menuitem id="menu_property_landlord_disbursements"
+                  name="Landlord Disbursements"
+                  parent="menu_property_landlords_parent"
+                  action="action_landlord_payment"
+                  sequence="30"/>
+
+        <menuitem id="menu_property_finance_landlord_payments"
+                  name="Landlord Payouts"
+                  parent="menu_property_finance_parent"
+                  action="action_landlord_payment"
+                  sequence="20"/>
+    </data>
+</odoo>

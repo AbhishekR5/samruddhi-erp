@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Partners: Landlords -->
+        <record id="partner_landlord_rajesh" model="res.partner">
+            <field name="name">Rajesh Mehta (Landlord)</field>
+            <field name="email">rajesh.mehta@example.com</field>
+            <field name="phone">+91 98200 11223</field>
+            <field name="is_property_landlord">True</field>
+            <field name="pan_number">ABCPM1234D</field>
+            <field name="street">Mehta Villa, MG Road</field>
+            <field name="city">Mumbai</field>
+            <field name="zip">400001</field>
+            <field name="country_id" ref="base.in"/>
+        </record>
+
+        <record id="partner_landlord_anand" model="res.partner">
+            <field name="name">Anand Sharma (Landlord)</field>
+            <field name="email">anand.sharma@example.com</field>
+            <field name="phone">+91 98333 44556</field>
+            <field name="is_property_landlord">True</field>
+            <field name="pan_number">BCDPS5678K</field>
+            <field name="street">Sharma Commercial Center, Andheri East</field>
+            <field name="city">Mumbai</field>
+            <field name="zip">400069</field>
+            <field name="country_id" ref="base.in"/>
+        </record>
+
+        <!-- Partners: Tenants -->
+        <record id="partner_tenant_vikram" model="res.partner">
+            <field name="name">Vikram Malhotra</field>
+            <field name="email">vikram.malhotra@example.com</field>
+            <field name="phone">+91 99201 55667</field>
+            <field name="is_property_tenant">True</field>
+            <field name="pan_number">CKLPM8910E</field>
+            <field name="emergency_contact_name">Pooja Malhotra</field>
+            <field name="emergency_contact_phone">+91 99201 55668</field>
+            <field name="emergency_contact_relation">Spouse</field>
+            <field name="city">Mumbai</field>
+        </record>
+
+        <record id="partner_tenant_priya" model="res.partner">
+            <field name="name">Priya Nair</field>
+            <field name="email">priya.nair@example.com</field>
+            <field name="phone">+91 98111 22334</field>
+            <field name="is_property_tenant">True</field>
+            <field name="pan_number">EFGPN4321R</field>
+            <field name="emergency_contact_name">Ramesh Nair</field>
+            <field name="emergency_contact_phone">+91 98111 22335</field>
+            <field name="emergency_contact_relation">Brother</field>
+            <field name="city">Mumbai</field>
+        </record>
+
+        <record id="partner_tenant_corp" model="res.partner">
+            <field name="name">NexGen Logistics Pvt Ltd (Corporate Tenant)</field>
+            <field name="is_company">True</field>
+            <field name="email">contact@nexgenlogistics.example.com</field>
+            <field name="phone">+91 22 2850 9000</field>
+            <field name="is_property_tenant">True</field>
+            <field name="pan_number">AABCN9999M</field>
+            <field name="gstin_number">27AABCN9999M1ZQ</field>
+            <field name="city">Mumbai</field>
+        </record>
+
+        <!-- Properties -->
+        <!-- Property 1: Samruddhi Towers (Owned) -->
+        <record id="prop_samruddhi_towers" model="property.property">
+            <field name="name">Samruddhi Towers</field>
+            <field name="property_type">apartment_building</field>
+            <field name="control_type">owned</field>
+            <field name="street">Plot 45, BKC Bandra</field>
+            <field name="city">Mumbai</field>
+            <field name="zip">400051</field>
+            <field name="total_area">15000</field>
+            <field name="number_of_floors">10</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Property 2: Green Park Residency (Rented from Landlord Rajesh Mehta) -->
+        <record id="prop_green_park" model="property.property">
+            <field name="name">Green Park Residency</field>
+            <field name="property_type">residential</field>
+            <field name="control_type">rented</field>
+            <field name="landlord_id" ref="partner_landlord_rajesh"/>
+            <field name="street">12 Link Road, Goregaon West</field>
+            <field name="city">Mumbai</field>
+            <field name="zip">400104</field>
+            <field name="total_area">8500</field>
+            <field name="number_of_floors">4</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Property 3: Fortune Commercial Hub (Leased from Landlord Anand Sharma) -->
+        <record id="prop_fortune_hub" model="property.property">
+            <field name="name">Fortune Commercial Hub</field>
+            <field name="property_type">commercial</field>
+            <field name="control_type">leased</field>
+            <field name="landlord_id" ref="partner_landlord_anand"/>
+            <field name="street">Marol Industrial Area, MIDC</field>
+            <field name="city">Mumbai</field>
+            <field name="zip">400093</field>
+            <field name="total_area">25000</field>
+            <field name="number_of_floors">6</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Units in Samruddhi Towers (Owned) -->
+        <record id="unit_101" model="property.unit">
+            <field name="name">Unit 101</field>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="floor">1st Floor</field>
+            <field name="unit_type">apartment</field>
+            <field name="area">1150</field>
+            <field name="bedrooms">2</field>
+            <field name="bathrooms">2</field>
+            <field name="furnishing">semi_furnished</field>
+            <field name="market_rent">55000</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="unit_102" model="property.unit">
+            <field name="name">Unit 102</field>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="floor">1st Floor</field>
+            <field name="unit_type">apartment</field>
+            <field name="area">1450</field>
+            <field name="bedrooms">3</field>
+            <field name="bathrooms">3</field>
+            <field name="furnishing">fully_furnished</field>
+            <field name="market_rent">75000</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="unit_201" model="property.unit">
+            <field name="name">Unit 201</field>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="floor">2nd Floor</field>
+            <field name="unit_type">apartment</field>
+            <field name="area">1150</field>
+            <field name="bedrooms">2</field>
+            <field name="bathrooms">2</field>
+            <field name="furnishing">unfurnished</field>
+            <field name="market_rent">50000</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="unit_202" model="property.unit">
+            <field name="name">Unit 202</field>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="floor">2nd Floor</field>
+            <field name="unit_type">penthouse</field>
+            <field name="area">2200</field>
+            <field name="bedrooms">4</field>
+            <field name="bathrooms">4</field>
+            <field name="furnishing">fully_furnished</field>
+            <field name="market_rent">120000</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Units in Green Park (Rented from Landlord) -->
+        <record id="unit_gp_1" model="property.unit">
+            <field name="name">Flat A-1</field>
+            <field name="property_id" ref="prop_green_park"/>
+            <field name="floor">Ground Floor</field>
+            <field name="unit_type">apartment</field>
+            <field name="area">950</field>
+            <field name="bedrooms">2</field>
+            <field name="bathrooms">2</field>
+            <field name="furnishing">semi_furnished</field>
+            <field name="market_rent">42000</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Units in Fortune Hub (Leased from Landlord) -->
+        <record id="unit_fh_comm" model="property.unit">
+            <field name="name">Corporate Wing 3A</field>
+            <field name="property_id" ref="prop_fortune_hub"/>
+            <field name="floor">3rd Floor</field>
+            <field name="unit_type">office</field>
+            <field name="area">5000</field>
+            <field name="furnishing">fully_furnished</field>
+            <field name="market_rent">250000</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- SCENARIO 1: Owned Property -> Tenant -> Rent -->
+        <!-- Samruddhi Towers Unit 101 -> Vikram Malhotra (Rent) -->
+        <record id="contract_scenario_1" model="property.tenant.contract">
+            <field name="tenant_id" ref="partner_tenant_vikram"/>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="unit_id" ref="unit_101"/>
+            <field name="contract_type">rent</field>
+            <field name="start_date">2026-10-01</field>
+            <field name="end_date">2027-09-30</field>
+            <field name="monthly_rent">55000</field>
+            <field name="security_deposit">100000</field>
+            <field name="payment_frequency">monthly</field>
+            <field name="payment_due_day">5</field>
+            <field name="state">active</field>
+        </record>
+
+        <!-- SCENARIO 2: Rented from Landlord -> Tenant -> Rent -->
+        <!-- Landlord Rajesh Mehta -> Samruddhi (Rent) -->
+        <record id="ll_contract_scenario_2" model="property.landlord.contract">
+            <field name="landlord_id" ref="partner_landlord_rajesh"/>
+            <field name="property_id" ref="prop_green_park"/>
+            <field name="contract_type">rent</field>
+            <field name="start_date">2026-09-01</field>
+            <field name="end_date">2028-08-31</field>
+            <field name="monthly_amount">35000</field>
+            <field name="security_deposit">100000</field>
+            <field name="payment_frequency">monthly</field>
+            <field name="payment_due_day">1</field>
+            <field name="state">active</field>
+        </record>
+        <!-- Samruddhi -> Priya Nair (Rent) -->
+        <record id="contract_scenario_2" model="property.tenant.contract">
+            <field name="tenant_id" ref="partner_tenant_priya"/>
+            <field name="property_id" ref="prop_green_park"/>
+            <field name="unit_id" ref="unit_gp_1"/>
+            <field name="contract_type">rent</field>
+            <field name="start_date">2026-10-01</field>
+            <field name="end_date">2027-09-30</field>
+            <field name="monthly_rent">42000</field>
+            <field name="security_deposit">80000</field>
+            <field name="payment_frequency">monthly</field>
+            <field name="payment_due_day">5</field>
+            <field name="state">active</field>
+        </record>
+
+        <!-- SCENARIO 3: Leased from Landlord -> Tenant -> Lease -->
+        <!-- Landlord Anand Sharma -> Samruddhi (Lease) -->
+        <record id="ll_contract_scenario_3" model="property.landlord.contract">
+            <field name="landlord_id" ref="partner_landlord_anand"/>
+            <field name="property_id" ref="prop_fortune_hub"/>
+            <field name="contract_type">lease</field>
+            <field name="start_date">2026-01-01</field>
+            <field name="end_date">2031-12-31</field>
+            <field name="monthly_amount">200000</field>
+            <field name="security_deposit">1000000</field>
+            <field name="payment_frequency">quarterly</field>
+            <field name="payment_due_day">1</field>
+            <field name="state">active</field>
+        </record>
+        <!-- Samruddhi -> NexGen Logistics (Lease) -->
+        <record id="contract_scenario_3" model="property.tenant.contract">
+            <field name="tenant_id" ref="partner_tenant_corp"/>
+            <field name="property_id" ref="prop_fortune_hub"/>
+            <field name="unit_id" ref="unit_fh_comm"/>
+            <field name="contract_type">lease</field>
+            <field name="start_date">2026-10-01</field>
+            <field name="end_date">2029-09-30</field>
+            <field name="monthly_rent">260000</field>
+            <field name="security_deposit">1200000</field>
+            <field name="payment_frequency">monthly</field>
+            <field name="payment_due_day">5</field>
+            <field name="state">active</field>
+        </record>
+
+        <!-- SCENARIO 4: Owned Property -> Tenant -> Lease -->
+        <!-- Samruddhi Towers Unit 202 -> NexGen Logistics (Lease) -->
+        <record id="contract_scenario_4" model="property.tenant.contract">
+            <field name="tenant_id" ref="partner_tenant_corp"/>
+            <field name="property_id" ref="prop_samruddhi_towers"/>
+            <field name="unit_id" ref="unit_202"/>
+            <field name="contract_type">lease</field>
+            <field name="start_date">2026-10-01</field>
+            <field name="end_date">2028-09-30</field>
+            <field name="monthly_rent">120000</field>
+            <field name="security_deposit">500000</field>
+            <field name="payment_frequency">quarterly</field>
+            <field name="payment_due_day">1</field>
+            <field name="state">active</field>
+        </record>
+    </data>
+</odoo>

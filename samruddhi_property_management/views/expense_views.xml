@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Expense List View -->
+        <record id="view_property_expense_tree" model="ir.ui.view">
+            <field name="name">property.expense.list</field>
+            <field name="model">property.expense</field>
+            <field name="arch" type="xml">
+                <list string="Property Expenses" decoration-success="payment_state == 'paid'" decoration-info="payment_state == 'approved'" decoration-muted="payment_state == 'cancelled'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="property_id"/>
+                    <field name="unit_id" optional="show"/>
+                    <field name="expense_category" widget="badge"/>
+                    <field name="vendor_id"/>
+                    <field name="amount" widget="monetary" sum="Total Operating Expenses"/>
+                    <field name="payment_state" widget="badge"/>
+                    <field name="move_id" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Expense Form View -->
+        <record id="view_property_expense_form" model="ir.ui.view">
+            <field name="name">property.expense.form</field>
+            <field name="model">property.expense</field>
+            <field name="arch" type="xml">
+                <form string="Property Expense">
+                    <header>
+                        <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="payment_state != 'draft'"/>
+                        <button name="action_approve" type="object" string="Approve" class="btn-success" invisible="payment_state != 'submitted'"/>
+                        <button name="action_create_vendor_bill" type="object" string="Generate Accounting Vendor Bill" class="btn-secondary" invisible="move_id != False or payment_state not in ('approved', 'submitted')"/>
+                        <button name="action_pay" type="object" string="Mark as Paid" class="btn-info" invisible="payment_state != 'approved'"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn-danger" invisible="payment_state not in ('draft', 'submitted')"/>
+                        <field name="payment_state" widget="statusbar" statusbar_visible="draft,submitted,approved,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Expense Reference"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Expense Allocation">
+                                <field name="property_id"/>
+                                <field name="unit_id"/>
+                                <field name="expense_category"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Billing &amp; Supplier">
+                                <field name="date"/>
+                                <field name="vendor_id"/>
+                                <field name="amount" widget="monetary"/>
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Description &amp; Notes" name="description">
+                                <field name="description" placeholder="Specify invoice numbers, work details, parts breakdown..."/>
+                            </page>
+                            <page string="Receipts &amp; Attachments" name="attachments">
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Expense Graph View -->
+        <record id="view_property_expense_graph" model="ir.ui.view">
+            <field name="name">property.expense.graph</field>
+            <field name="model">property.expense</field>
+            <field name="arch" type="xml">
+                <graph string="Expense Breakdown by Category" type="bar">
+                    <field name="expense_category"/>
+                    <field name="amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Expense Search View -->
+        <record id="view_property_expense_search" model="ir.ui.view">
+            <field name="name">property.expense.search</field>
+            <field name="model">property.expense</field>
+            <field name="arch" type="xml">
+                <search string="Search Expenses">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="vendor_id"/>
+                    <filter string="Maintenance &amp; Repairs" name="maintenance" domain="[('expense_category', 'in', ['maintenance', 'repair'])]"/>
+                    <filter string="Utilities (Power/Water)" name="utility" domain="[('expense_category', 'in', ['electricity', 'water'])]"/>
+                    <filter string="Taxes &amp; Insurance" name="statutory" domain="[('expense_category', 'in', ['property_tax', 'insurance'])]"/>
+                    <separator/>
+                    <filter string="Approved" name="approved" domain="[('payment_state', '=', 'approved')]"/>
+                    <filter string="Paid" name="paid" domain="[('payment_state', '=', 'paid')]"/>
+                    <separator/>
+                    <filter string="Property" name="group_property" domain="[]" context="{'group_by': 'property_id'}"/>
+                    <filter string="Category" name="group_category" domain="[]" context="{'group_by': 'expense_category'}"/>
+                    <filter string="Vendor" name="group_vendor" domain="[]" context="{'group_by': 'vendor_id'}"/>
+                    <filter string="Month" name="group_month" domain="[]" context="{'group_by': 'date:month'}"/>
+                    <filter string="Status" name="group_status" domain="[]" context="{'group_by': 'payment_state'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_property_expense" model="ir.actions.act_window">
+            <field name="name">Operating Expenses</field>
+            <field name="res_model">property.expense</field>
+            <field name="view_mode">list,graph,form</field>
+            <field name="search_view_id" ref="view_property_expense_search"/>
+        </record>
+
+        <!-- Menu item -->
+        <menuitem id="menu_property_finance_expenses"
+                  name="Property Expenses"
+                  parent="menu_property_finance_parent"
+                  action="action_property_expense"
+                  sequence="40"/>
+    </data>
+</odoo>

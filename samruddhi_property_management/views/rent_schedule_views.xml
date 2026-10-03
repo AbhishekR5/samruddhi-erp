@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_rent_schedule_tree" model="ir.ui.view">
+            <field name="name">property.rent.schedule.list</field>
+            <field name="model">property.rent.schedule</field>
+            <field name="arch" type="xml">
+                <list string="Rent Schedules" decoration-success="state == 'paid'" decoration-danger="state == 'overdue'" decoration-warning="state == 'partial'" decoration-muted="state == 'cancelled'">
+                    <field name="name"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <field name="period_start"/>
+                    <field name="period_end"/>
+                    <field name="due_date"/>
+                    <field name="amount" widget="monetary" sum="Total Billed"/>
+                    <field name="paid_amount" widget="monetary" sum="Total Collected"/>
+                    <field name="balance_amount" widget="monetary" sum="Total Balance"/>
+                    <field name="payment_date" optional="show"/>
+                    <field name="state" widget="badge"/>
+                    <field name="move_id" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_rent_schedule_form" model="ir.ui.view">
+            <field name="name">property.rent.schedule.form</field>
+            <field name="model">property.rent.schedule</field>
+            <field name="arch" type="xml">
+                <form string="Rent Schedule">
+                    <header>
+                        <button name="action_mark_paid" type="object" string="Mark as Fully Paid" class="btn-primary" invisible="state in ('paid', 'cancelled')"/>
+                        <button name="action_create_invoice" type="object" string="Generate Accounting Invoice" class="btn-secondary" invisible="move_id != False or state == 'cancelled'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="pending,partial,paid,overdue"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Rent Installment"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Contract &amp; Tenant">
+                                <field name="contract_id"/>
+                                <field name="tenant_id"/>
+                                <field name="property_id"/>
+                                <field name="unit_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Billing Period &amp; Due Date">
+                                <field name="period_start"/>
+                                <field name="period_end"/>
+                                <field name="due_date"/>
+                                <field name="payment_date"/>
+                            </group>
+                        </group>
+
+                        <group string="Amounts">
+                            <group>
+                                <field name="amount" widget="monetary"/>
+                                <field name="paid_amount" widget="monetary"/>
+                            </group>
+                            <group>
+                                <field name="balance_amount" widget="monetary" decoration-danger="balance_amount &gt; 0"/>
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_rent_schedule_pivot" model="ir.ui.view">
+            <field name="name">property.rent.schedule.pivot</field>
+            <field name="model">property.rent.schedule</field>
+            <field name="arch" type="xml">
+                <pivot string="Rent Analysis">
+                    <field name="due_date" interval="month" type="col"/>
+                    <field name="property_id" type="row"/>
+                    <field name="amount" type="measure"/>
+                    <field name="paid_amount" type="measure"/>
+                    <field name="balance_amount" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_rent_schedule_search" model="ir.ui.view">
+            <field name="name">property.rent.schedule.search</field>
+            <field name="model">property.rent.schedule</field>
+            <field name="arch" type="xml">
+                <search string="Search Rent Schedules">
+                    <field name="name"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <filter string="Pending Dues" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Overdue" name="overdue" domain="[('state', '=', 'overdue')]"/>
+                    <filter string="Partially Paid" name="partial" domain="[('state', '=', 'partial')]"/>
+                    <filter string="Paid" name="paid" domain="[('state', '=', 'paid')]"/>
+                    <separator/>
+                    <filter string="Tenant" name="group_tenant" domain="[]" context="{'group_by': 'tenant_id'}"/>
+                    <filter string="Property" name="group_property" domain="[]" context="{'group_by': 'property_id'}"/>
+                    <filter string="Due Month" name="group_month" domain="[]" context="{'group_by': 'due_date:month'}"/>
+                    <filter string="Status" name="group_state" domain="[]" context="{'group_by': 'state'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_rent_schedule" model="ir.actions.act_window">
+            <field name="name">Rent Schedules</field>
+            <field name="res_model">property.rent.schedule</field>
+            <field name="view_mode">list,pivot,form</field>
+            <field name="search_view_id" ref="view_rent_schedule_search"/>
+        </record>
+
+        <!-- Menu items -->
+        <menuitem id="menu_property_tenant_payments"
+                  name="Rent Payments / Dues"
+                  parent="menu_property_tenants_parent"
+                  action="action_rent_schedule"
+                  sequence="30"/>
+
+        <menuitem id="menu_property_finance_rent"
+                  name="Rent Collection"
+                  parent="menu_property_finance_parent"
+                  action="action_rent_schedule"
+                  sequence="10"/>
+    </data>
+</odoo>

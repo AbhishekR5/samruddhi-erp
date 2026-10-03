@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Root Menu -->
+        <menuitem id="menu_property_root"
+                  name="Property Management"
+                  sequence="20"
+                  web_icon="samruddhi_property_management,static/description/icon.png"
+                  groups="group_property_user"/>
+
+        <!-- Top Categories -->
+        <menuitem id="menu_property_dashboard"
+                  name="Dashboard"
+                  parent="menu_property_root"
+                  sequence="10"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_properties_parent"
+                  name="Properties"
+                  parent="menu_property_root"
+                  sequence="20"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_landlords_parent"
+                  name="Landlords"
+                  parent="menu_property_root"
+                  sequence="30"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_tenants_parent"
+                  name="Tenants"
+                  parent="menu_property_root"
+                  sequence="40"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_contracts_parent"
+                  name="Contracts"
+                  parent="menu_property_root"
+                  sequence="50"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_finance_parent"
+                  name="Finance"
+                  parent="menu_property_root"
+                  sequence="60"
+                  groups="group_property_finance"/>
+
+        <menuitem id="menu_property_maintenance_parent"
+                  name="Maintenance"
+                  parent="menu_property_root"
+                  sequence="70"
+                  groups="group_property_user"/>
+
+        <menuitem id="menu_property_reports_parent"
+                  name="Reports"
+                  parent="menu_property_root"
+                  sequence="80"
+                  groups="group_property_finance"/>
+
+        <menuitem id="menu_property_configuration_parent"
+                  name="Configuration"
+                  parent="menu_property_root"
+                  sequence="90"
+                  groups="group_property_admin"/>
+    </data>
+</odoo>

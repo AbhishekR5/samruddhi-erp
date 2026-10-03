@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron: Contract Expiry Checker -->
+        <record id="cron_contract_expiry_checker" model="ir.cron">
+            <field name="name">Property Management: Check Contract Expirations</field>
+            <field name="model_id" ref="model_property_tenant_contract"/>
+            <field name="state">code</field>
+            <field name="code">
+today = datetime.date.today()
+limit_30 = today + datetime.timedelta(days=30)
+# Tenant contracts expiring soon
+expiring_tenants = env['property.tenant.contract'].search([
+    ('state', '=', 'active'),
+    ('end_date', '&lt;=', limit_30),
+    ('end_date', '&gt;=', today)
+])
+for c in expiring_tenants:
+    c.write({'state': 'expiring'})
+
+# Landlord contracts expiring soon
+expiring_landlords = env['property.landlord.contract'].search([
+    ('state', '=', 'active'),
+    ('end_date', '&lt;=', limit_30),
+    ('end_date', '&gt;=', today)
+])
+for c in expiring_landlords:
+    c.write({'state': 'expiring'})
+
+# Mark fully expired contracts
+expired_tenants = env['property.tenant.contract'].search([
+    ('state', 'in', ['active', 'expiring']),
+    ('end_date', '&lt;', today)
+])
+for c in expired_tenants:
+    c.write({'state': 'expired'})
+    if c.unit_id:
+        c.unit_id._compute_active_contract()
+
+expired_landlords = env['property.landlord.contract'].search([
+    ('state', 'in', ['active', 'expiring']),
+    ('end_date', '&lt;', today)
+])
+for c in expired_landlords:
+    c.write({'state': 'expired'})
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+
+            <field name="active">True</field>
+        </record>
+
+        <!-- Cron: Mark Overdue Schedules -->
+        <record id="cron_mark_overdue_schedules" model="ir.cron">
+            <field name="name">Property Management: Mark Overdue Rent Schedules</field>
+            <field name="model_id" ref="model_property_rent_schedule"/>
+            <field name="state">code</field>
+            <field name="code">
+today = datetime.date.today()
+overdue_schedules = env['property.rent.schedule'].search([
+    ('state', 'in', ['pending', 'partial']),
+    ('due_date', '&lt;', today),
+    ('balance_amount', '&gt;', 0)
+])
+for s in overdue_schedules:
+    s.write({'state': 'overdue'})
+
+overdue_payments = env['property.landlord.payment'].search([
+    ('state', 'in', ['pending', 'partial']),
+    ('due_date', '&lt;', today),
+    ('balance_amount', '&gt;', 0)
+])
+for p in overdue_payments:
+    p.write({'state': 'overdue'})
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

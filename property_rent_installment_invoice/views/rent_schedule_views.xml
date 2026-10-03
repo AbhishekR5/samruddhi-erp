@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_rent_schedule_form_invoice_smart_button" model="ir.ui.view">
+            <field name="name">property.rent.schedule.form.invoice.integration</field>
+            <field name="model">property.rent.schedule</field>
+            <field name="inherit_id" ref="samruddhi_property_management.view_rent_schedule_form"/>
+            <field name="arch" type="xml">
+                <!-- Add Register Payment and Sync buttons in header -->
+                <xpath expr="//header/button[@name='action_mark_paid']" position="before">
+                    <button name="action_open_payment_wizard"
+                            type="object"
+                            string="Register / Update Payment"
+                            class="btn-primary"
+                            invisible="state in ('paid', 'cancelled')"/>
+                </xpath>
+                <xpath expr="//header/button[@name='action_create_invoice']" position="after">
+                    <button name="action_sync_from_invoice"
+                            type="object"
+                            string="Sync from Invoice"
+                            class="btn-secondary"
+                            invisible="not move_id or state == 'paid'"/>
+                </xpath>
+
+                <!-- Insert Button Box at top of sheet -->
+                <xpath expr="//sheet" position="inside">
+                    <!-- Placeholder if needed -->
+                </xpath>
+                <xpath expr="//sheet/div[hasclass('oe_title')]" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Invoice Smart Button -->
+                        <button name="action_view_invoice"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o"
+                                invisible="not move_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="invoice_name"/></span>
+                                <span class="o_stat_text">Customer Invoice</span>
+                            </div>
+                        </button>
+                        <!-- Remaining Balance Smart Button -->
+                        <button class="oe_stat_button" icon="fa-money" disabled="1">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value text-danger" invisible="balance_amount == 0"><field name="balance_amount" widget="monetary"/></span>
+                                <span class="o_stat_value text-success" invisible="balance_amount != 0">$ 0.00</span>
+                                <span class="o_stat_text">Remaining Balance</span>
+                            </div>
+                        </button>
+                        <!-- Collection Progress Smart Button -->
+                        <button class="oe_stat_button" icon="fa-pie-chart" disabled="1">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="percent_paid"/>%</span>
+                                <span class="o_stat_text">Collected</span>
+                            </div>
+                        </button>
+                    </div>
+                </xpath>
+
+                <!-- High-visibility Remaining Balance and Payment KPI Card -->
+                <xpath expr="//sheet/div[hasclass('oe_title')]" position="after">
+                    <div class="alert alert-light border shadow-sm my-3 p-3 rounded-3" role="status" invisible="state == 'cancelled'">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <div class="small text-muted fw-bold text-uppercase">Payment Status Overview</div>
+                                <div class="h5 mb-0 fw-bold">
+                                    <span invisible="state != 'paid'" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fs-6">
+                                        <i class="fa fa-check-circle me-1"></i> Fully Paid
+                                    </span>
+                                    <span invisible="state != 'partial'" class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 fs-6">
+                                        <i class="fa fa-adjust me-1"></i> Partially Paid
+                                    </span>
+                                    <span invisible="state != 'pending'" class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 fs-6">
+                                        <i class="fa fa-clock-o me-1"></i> Payment Pending
+                                    </span>
+                                    <span invisible="state != 'overdue'" class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 fs-6">
+                                        <i class="fa fa-exclamation-triangle me-1"></i> Overdue Payment
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-4 text-end">
+                                <div>
+                                    <div class="small text-muted">Total Rent Due</div>
+                                    <div class="fw-bold fs-6"><field name="amount" widget="monetary"/></div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Paid to Date</div>
+                                    <div class="fw-bold text-success fs-6"><field name="paid_amount" widget="monetary"/></div>
+                                </div>
+                                <div class="ps-3 border-start">
+                                    <div class="small text-muted fw-bold text-uppercase">Remaining Rent Balance</div>
+                                    <div class="h4 mb-0 fw-bold text-danger"><field name="balance_amount" widget="monetary"/></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <field name="percent_paid" widget="progressbar" string="Rent Collection Progress"/>
+                        </div>
+                    </div>
+                </xpath>
+
+                <!-- Also enrich the Amounts group to display remaining balance clearly -->
+                <xpath expr="//field[@name='balance_amount']" position="attributes">
+                    <attribute name="class">fw-bold text-danger</attribute>
+                    <attribute name="decoration-danger">balance_amount &gt; 0</attribute>
+                    <attribute name="decoration-success">balance_amount == 0</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

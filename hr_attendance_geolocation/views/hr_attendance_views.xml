@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Attendance List View to show Check-In and Check-Out Location -->
+        <record id="view_attendance_tree_geo" model="ir.ui.view">
+            <field name="name">hr.attendance.list.geo</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='check_in']" position="after">
+                    <field name="in_location" optional="show" string="Check-In Location"/>
+                </xpath>
+                <xpath expr="//field[@name='check_out']" position="after">
+                    <field name="out_location" optional="show" string="Check-Out Location"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Attendance Form View to show Embedded Google Maps & 10m Varied Geolocation -->
+        <record id="hr_attendance_view_form_geo" model="ir.ui.view">
+            <field name="name">hr.attendance.form.geo</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Ensure Check In location group is ALWAYS visible, even for manual check-ins -->
+                <xpath expr="//group[@name='check_in_group']/group[2]" position="attributes">
+                    <attribute name="invisible">not check_in</attribute>
+                </xpath>
+
+                <!-- Check In Group Enhancement: Add refresh button and map card -->
+                <xpath expr="//button[@name='action_in_attendance_maps']" position="after">
+                    <button name="action_detect_in_location"
+                            type="object"
+                            class="btn btn-link ps-0 pt-0 pb-2 text-info"
+                            icon="fa-location-arrow"
+                            string="Detect / Refresh GPS Location"
+                            colspan="2"
+                            invisible="not check_in"/>
+                    <div class="text-muted small mt-1 mb-2">
+                        <i class="fa fa-info-circle text-info me-1" title="Variance Info"/>
+                        <span>Google location ~10m variance applied for privacy and verification</span>
+                    </div>
+                    <field name="in_map_embed_html" nolabel="1" colspan="2" widget="html" readonly="1"/>
+                </xpath>
+
+                <!-- Ensure Check Out location group is ALWAYS visible when check_out is set -->
+                <xpath expr="//group[@name='check_out_group']/group[2]" position="attributes">
+                    <attribute name="invisible">not check_out</attribute>
+                </xpath>
+
+                <!-- Check Out Group Enhancement -->
+                <xpath expr="//button[@name='action_out_attendance_maps']" position="after">
+                    <button name="action_detect_out_location"
+                            type="object"
+                            class="btn btn-link ps-0 pt-0 pb-2 text-info"
+                            icon="fa-location-arrow"
+                            string="Detect / Refresh GPS Location"
+                            colspan="2"
+                            invisible="not check_out"/>
+                    <div class="text-muted small mt-1 mb-2">
+                        <i class="fa fa-info-circle text-info me-1" title="Variance Info"/>
+                        <span>Google location ~10m variance applied for privacy and verification</span>
+                    </div>
+                    <field name="out_map_embed_html" nolabel="1" colspan="2" widget="html" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

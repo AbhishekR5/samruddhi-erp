@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Deposit List View -->
+        <record id="view_security_deposit_tree" model="ir.ui.view">
+            <field name="name">property.security.deposit.list</field>
+            <field name="model">property.security.deposit</field>
+            <field name="arch" type="xml">
+                <list string="Security Deposits" decoration-info="state == 'held'" decoration-success="state == 'refunded'" decoration-warning="state == 'adjusted'" decoration-muted="state == 'required'">
+                    <field name="name"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <field name="amount" widget="monetary" sum="Total Required"/>
+                    <field name="received_date"/>
+                    <field name="adjustment_amount" widget="monetary" sum="Total Deductions"/>
+                    <field name="refund_amount" widget="monetary" sum="Total Refunded"/>
+                    <field name="outstanding_amount" widget="monetary" sum="Held in Escrow"/>
+                    <field name="state" widget="badge"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Deposit Form View -->
+        <record id="view_security_deposit_form" model="ir.ui.view">
+            <field name="name">property.security.deposit.form</field>
+            <field name="model">property.security.deposit</field>
+            <field name="arch" type="xml">
+                <form string="Security Deposit">
+                    <header>
+                        <button name="action_receive_deposit" type="object" string="Receive &amp; Hold Deposit" class="btn-primary" invisible="state != 'required'"/>
+                        <button name="action_refund_deposit" type="object" string="Process Refund" class="btn-secondary" invisible="state not in ('held', 'adjusted') or outstanding_amount &lt;= 0"/>
+                        <field name="state" widget="statusbar" statusbar_visible="required,held,adjusted,refunded"/>
+                    </header>
+                    <sheet>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note:</strong> Security deposits are refundable liabilities held in escrow and are <u>strictly excluded from rental revenue</u>.
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Deposit Reference"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Contract &amp; Occupant">
+                                <field name="contract_id"/>
+                                <field name="tenant_id"/>
+                                <field name="property_id"/>
+                                <field name="unit_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Deposit Balances">
+                                <field name="amount" widget="monetary"/>
+                                <field name="received_date"/>
+                                <field name="outstanding_amount" widget="monetary" class="oe_subtotal_footer_separator text-primary fw-bold"/>
+                            </group>
+                        </group>
+
+                        <group string="Deductions &amp; Refunds">
+                            <group string="Damages / Adjustments">
+                                <field name="adjustment_amount" widget="monetary"/>
+                                <field name="adjustment_reason" placeholder="Document specific repair costs or rent arrears deducted..."/>
+                            </group>
+                            <group string="Refund Settlement">
+                                <field name="refund_amount" widget="monetary"/>
+                                <field name="refund_date"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_security_deposit_search" model="ir.ui.view">
+            <field name="name">property.security.deposit.search</field>
+            <field name="model">property.security.deposit</field>
+            <field name="arch" type="xml">
+                <search string="Search Deposits">
+                    <field name="name"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <filter string="Held in Escrow" name="held" domain="[('state', 'in', ['received', 'held'])]"/>
+                    <filter string="Required (Pending Receipt)" name="required" domain="[('state', '=', 'required')]"/>
+                    <filter string="Adjusted / Deducted" name="adjusted" domain="[('state', '=', 'adjusted')]"/>
+                    <filter string="Fully Refunded" name="refunded" domain="[('state', '=', 'refunded')]"/>
+                    <separator/>
+                    <filter string="Tenant" name="group_tenant" domain="[]" context="{'group_by': 'tenant_id'}"/>
+                    <filter string="Property" name="group_property" domain="[]" context="{'group_by': 'property_id'}"/>
+                    <filter string="Status" name="group_state" domain="[]" context="{'group_by': 'state'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_security_deposit" model="ir.actions.act_window">
+            <field name="name">Security Deposits</field>
+            <field name="res_model">property.security.deposit</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_security_deposit_search"/>
+        </record>
+
+        <!-- Menu item -->
+        <menuitem id="menu_property_finance_deposits"
+                  name="Security Deposits"
+                  parent="menu_property_finance_parent"
+                  action="action_security_deposit"
+                  sequence="30"/>
+    </data>
+</odoo>

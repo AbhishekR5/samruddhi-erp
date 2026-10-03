@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_property_property_tree" model="ir.ui.view">
+            <field name="name">property.property.list</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <list string="Properties" decoration-success="status == 'available'" decoration-info="status == 'occupied'" decoration-warning="status == 'maintenance'" decoration-muted="status == 'inactive'">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="property_type"/>
+                    <field name="control_type" widget="badge" decoration-success="control_type == 'owned'" decoration-warning="control_type in ('rented', 'leased')"/>
+                    <field name="landlord_id" optional="show"/>
+                    <field name="city"/>
+                    <field name="total_units_count" string="Units"/>
+                    <field name="occupied_units_count" string="Occupied"/>
+                    <field name="occupancy_rate" widget="progressbar"/>
+                    <field name="monthly_net_income" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="status" widget="badge"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_property_property_form" model="ir.ui.view">
+            <field name="name">property.property.form</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <form string="Property">
+                    <header>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,available,occupied,maintenance,inactive" options="{'clickable': '1'}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_units" type="object" class="oe_stat_button" icon="fa-th-large">
+                                <field name="total_units_count" widget="statinfo" string="Units"/>
+                            </button>
+                            <button name="action_view_landlord_contracts" type="object" class="oe_stat_button" icon="fa-handshake-o" invisible="control_type == 'owned'">
+                                <field name="landlord_contract_count" widget="statinfo" string="Landlord Cont."/>
+                            </button>
+                            <button name="action_view_tenant_contracts" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                                <field name="tenant_contract_count" widget="statinfo" string="Tenant Cont."/>
+                            </button>
+                            <button name="action_view_maintenance" type="object" class="oe_stat_button" icon="fa-wrench">
+                                <field name="maintenance_count" widget="statinfo" string="Maintenance"/>
+                            </button>
+                            <button name="action_view_expenses" type="object" class="oe_stat_button" icon="fa-money">
+                                <field name="expense_count" widget="statinfo" string="Expenses"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Property Name"/>
+                            <h1>
+                                <field name="name" placeholder="e.g. Samruddhi Heights / Green Acres"/>
+                            </h1>
+                            <h3>
+                                <field name="code" readonly="1" class="text-muted"/>
+                            </h3>
+                        </div>
+
+                        <group>
+                            <group string="Control &amp; Classification">
+                                <field name="property_type"/>
+                                <field name="control_type"/>
+                                <field name="landlord_id" invisible="control_type == 'owned'" required="control_type in ('rented', 'leased')"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Physical Dimensions">
+                                <field name="total_area"/>
+                                <field name="number_of_floors"/>
+                                <field name="active" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Location / Address">
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b>Address</b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="street" placeholder="Street..." class="o_address_street"/>
+                                    <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                    <field name="city" placeholder="City" class="o_address_city"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True}"/>
+                                    <field name="zip" placeholder="PIN Code" class="o_address_zip"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_open': True}"/>
+                                </div>
+                                <field name="map_embed_html" nolabel="1" colspan="2" widget="html"/>
+                            </group>
+                            <group string="Occupancy &amp; Performance">
+                                <field name="occupied_units_count"/>
+                                <field name="vacant_units_count"/>
+                                <field name="occupancy_rate" widget="progressbar"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Rentable Units" name="units">
+                                <field name="unit_ids">
+                                    <list editable="bottom" string="Units">
+                                        <field name="unit_code" readonly="1"/>
+                                        <field name="name"/>
+                                        <field name="floor"/>
+                                        <field name="unit_type"/>
+                                        <field name="area"/>
+                                        <field name="bedrooms"/>
+                                        <field name="bathrooms"/>
+                                        <field name="furnishing"/>
+                                        <field name="market_rent"/>
+                                        <field name="status" widget="badge" decoration-success="status == 'available'" decoration-info="status == 'occupied'" decoration-warning="status == 'maintenance'"/>
+                                        <field name="current_tenant_id" readonly="1" optional="show"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Financial Economics" name="financials">
+                                <group col="3">
+                                    <group string="Tenant Revenue">
+                                        <field name="total_monthly_revenue" widget="monetary"/>
+                                    </group>
+                                    <group string="Landlord Cost">
+                                        <field name="total_monthly_cost" widget="monetary"/>
+                                    </group>
+                                    <group string="Operating Spread">
+                                        <field name="monthly_net_income" widget="monetary" decoration-bf="1" decoration-success="monthly_net_income &gt; 0" decoration-danger="monthly_net_income &lt; 0"/>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Description" name="description">
+                                <field name="description" placeholder="Add detailed property amenities, guidelines, legal survey numbers..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Kanban View -->
+        <record id="view_property_property_kanban" model="ir.ui.view">
+            <field name="name">property.property.kanban</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="property_type"/>
+                    <field name="control_type"/>
+                    <field name="city"/>
+                    <field name="status"/>
+                    <field name="total_units_count"/>
+                    <field name="occupied_units_count"/>
+                    <field name="occupancy_rate"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="d-flex justify-content-between">
+                                <strong class="fs-5 text-primary"><field name="name"/></strong>
+                                <span class="badge text-bg-secondary"><field name="code"/></span>
+                            </div>
+                            <div class="mt-2 text-muted">
+                                <i class="fa fa-map-marker me-1" title="Location"/> <field name="city"/> | <field name="property_type"/>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge" t-attf-class="#{record.control_type.raw_value == 'owned' ? 'text-bg-success' : 'text-bg-warning'}">
+                                    <field name="control_type"/>
+                                </span>
+                                <span class="badge text-bg-info ms-1">
+                                    <field name="status"/>
+                                </span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>Occupancy (<field name="occupied_units_count"/>/<field name="total_units_count"/> Units)</span>
+                                    <span><field name="occupancy_rate"/>%</span>
+                                </div>
+                                <div class="progress mt-1" style="height: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar" t-attf-style="width: #{record.occupancy_rate.raw_value}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_property_property_search" model="ir.ui.view">
+            <field name="name">property.property.search</field>
+            <field name="model">property.property</field>
+            <field name="arch" type="xml">
+                <search string="Search Properties">
+                    <field name="name" string="Property" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                    <field name="landlord_id"/>
+                    <field name="city"/>
+                    <filter string="Owned by Samruddhi" name="owned" domain="[('control_type', '=', 'owned')]"/>
+                    <filter string="Rented from Landlord" name="rented" domain="[('control_type', '=', 'rented')]"/>
+                    <filter string="Leased from Landlord" name="leased" domain="[('control_type', '=', 'leased')]"/>
+                    <separator/>
+                    <filter string="Available" name="available" domain="[('status', '=', 'available')]"/>
+                    <filter string="Occupied" name="occupied" domain="[('status', '=', 'occupied')]"/>
+                    <filter string="Under Maintenance" name="maintenance" domain="[('status', '=', 'maintenance')]"/>
+                    <separator/>
+                    <filter string="Control Type" name="group_control_type" domain="[]" context="{'group_by': 'control_type'}"/>
+                    <filter string="Property Type" name="group_property_type" domain="[]" context="{'group_by': 'property_type'}"/>
+                    <filter string="Status" name="group_status" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string="Landlord" name="group_landlord" domain="[]" context="{'group_by': 'landlord_id'}"/>
+                    <filter string="City" name="group_city" domain="[]" context="{'group_by': 'city'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Window Action -->
+        <record id="action_property_property" model="ir.actions.act_window">
+            <field name="name">Properties</field>
+            <field name="res_model">property.property</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="search_view_id" ref="view_property_property_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Register your first managed property!
+                </p>
+                <p>
+                    Manage Owned, Rented, and Leased real estate inventory for Samruddhi.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu items -->
+        <menuitem id="menu_property_properties_list"
+                  name="All Properties"
+                  parent="menu_property_properties_parent"
+                  action="action_property_property"
+                  sequence="10"/>
+    </data>
+</odoo>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tenant Contract List View -->
+        <record id="view_tenant_contract_tree" model="ir.ui.view">
+            <field name="name">property.tenant.contract.list</field>
+            <field name="model">property.tenant.contract</field>
+            <field name="arch" type="xml">
+                <list string="Tenant Contracts" decoration-success="state == 'active'" decoration-warning="state == 'expiring'" decoration-muted="state in ('expired', 'cancelled')" decoration-danger="state == 'terminated'">
+                    <field name="name"/>
+                    <field name="contract_number"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <field name="contract_type" widget="badge"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="monthly_rent" widget="monetary"/>
+                    <field name="payment_frequency"/>
+                    <field name="total_rent_outstanding" widget="monetary"/>
+                    <field name="state" widget="badge"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Tenant Contract Form View -->
+        <record id="view_tenant_contract_form" model="ir.ui.view">
+            <field name="name">property.tenant.contract.form</field>
+            <field name="model">property.tenant.contract</field>
+            <field name="arch" type="xml">
+                <form string="Tenant Contract">
+                    <header>
+                        <button name="action_activate" type="object" string="Activate Contract" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_generate_rent_schedules" type="object" string="Generate Rent Schedules" class="btn-secondary" invisible="state not in ('draft', 'active')"/>
+                        <button name="action_terminate" type="object" string="Terminate" class="btn-warning" invisible="state not in ('active', 'expiring')"/>
+                        <button name="action_cancel" type="object" string="Cancel" class="btn-danger" invisible="state not in ('draft', 'active')"/>
+                        <button name="action_draft" type="object" string="Reset to Draft" class="btn-light" invisible="state not in ('cancelled', 'terminated')"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,expiring,expired"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_rent_schedules" type="object" class="oe_stat_button" icon="fa-calendar">
+                                <field name="rent_schedule_count" widget="statinfo" string="Rent Due"/>
+                            </button>
+                            <button name="action_view_deposits" type="object" class="oe_stat_button" icon="fa-shield">
+                                <field name="deposit_count" widget="statinfo" string="Security Deposit"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Contract Reference"/>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                            <h3>
+                                <field name="contract_number" placeholder="Legal / Tenant Agreement ID"/>
+                            </h3>
+                        </div>
+
+                        <group>
+                            <group string="Parties &amp; Occupied Space">
+                                <field name="tenant_id"/>
+                                <field name="property_id"/>
+                                <field name="unit_id"/>
+                                <field name="contract_type"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Financial Terms">
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="monthly_rent" widget="monetary"/>
+                                <field name="security_deposit" widget="monetary"/>
+                                <field name="payment_frequency"/>
+                                <field name="payment_due_day"/>
+                            </group>
+                        </group>
+
+                        <group string="Grace Period &amp; Escalations">
+                            <group>
+                                <field name="grace_period"/>
+                                <field name="late_fee" widget="monetary"/>
+                                <field name="notice_period"/>
+                                <field name="rent_escalation"/>
+                            </group>
+                            <group string="Collection Metrics">
+                                <field name="total_rent_billed" widget="monetary"/>
+                                <field name="total_rent_collected" widget="monetary"/>
+                                <field name="total_rent_outstanding" widget="monetary" decoration-danger="total_rent_outstanding &gt; 0"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Rent Schedules" name="schedules">
+                                <field name="rent_schedule_ids" readonly="1">
+                                    <list string="Rent Collection Schedules" decoration-success="state == 'paid'" decoration-danger="state == 'overdue'" decoration-warning="state == 'partial'">
+                                        <field name="name"/>
+                                        <field name="period_start"/>
+                                        <field name="period_end"/>
+                                        <field name="due_date"/>
+                                        <field name="amount" widget="monetary"/>
+                                        <field name="paid_amount" widget="monetary"/>
+                                        <field name="balance_amount" widget="monetary"/>
+                                        <field name="payment_date"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="move_id" optional="show"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Security Deposits" name="deposits">
+                                <field name="security_deposit_ids" readonly="1">
+                                    <list string="Security Deposits">
+                                        <field name="name"/>
+                                        <field name="amount" widget="monetary"/>
+                                        <field name="received_date"/>
+                                        <field name="adjustment_amount" widget="monetary"/>
+                                        <field name="refund_amount" widget="monetary"/>
+                                        <field name="outstanding_amount" widget="monetary"/>
+                                        <field name="state" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Renewal &amp; Rules" name="terms">
+                                <field name="renewal_terms" placeholder="Rules on subletting, renewal advance notices, lock-in period..."/>
+                            </page>
+                            <page string="Contract Documents" name="documents">
+                                <field name="document_ids" widget="many2many_binary"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_tenant_contract_search" model="ir.ui.view">
+            <field name="name">property.tenant.contract.search</field>
+            <field name="model">property.tenant.contract</field>
+            <field name="arch" type="xml">
+                <search string="Search Tenant Contracts">
+                    <field name="name" string="Contract" filter_domain="['|', ('name', 'ilike', self), ('contract_number', 'ilike', self)]"/>
+                    <field name="tenant_id"/>
+                    <field name="property_id"/>
+                    <field name="unit_id"/>
+                    <filter string="Active Contracts" name="active" domain="[('state', '=', 'active')]"/>
+                    <filter string="Expiring Soon" name="expiring" domain="[('state', '=', 'expiring')]"/>
+                    <filter string="Expired" name="expired" domain="[('state', '=', 'expired')]"/>
+                    <separator/>
+                    <filter string="Rent Agreements" name="rent" domain="[('contract_type', '=', 'rent')]"/>
+                    <separator/>
+                    <filter string="Tenant" name="group_tenant" domain="[]" context="{'group_by': 'tenant_id'}"/>
+                    <filter string="Property" name="group_property" domain="[]" context="{'group_by': 'property_id'}"/>
+                    <filter string="Unit" name="group_unit" domain="[]" context="{'group_by': 'unit_id'}"/>
+                    <filter string="Status" name="group_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Contract Type" name="group_type" domain="[]" context="{'group_by': 'contract_type'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- All Tenant Contracts Action -->
+        <record id="action_tenant_contract" model="ir.actions.act_window">
+            <field name="name">Tenant Contracts</field>
+            <field name="res_model">property.tenant.contract</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_tenant_contract_search"/>
+        </record>
+
+        <!-- Expiring Contracts Action -->
+        <record id="action_tenant_contract_expiring" model="ir.actions.act_window">
+            <field name="name">Expiring Contracts</field>
+            <field name="res_model">property.tenant.contract</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'expiring')]</field>
+            <field name="context">{'search_default_expiring': 1}</field>
+        </record>
+
+        <!-- Menu items -->
+        <menuitem id="menu_property_tenant_contracts"
+                  name="Tenant Contracts"
+                  parent="menu_property_tenants_parent"
+                  action="action_tenant_contract"
+                  sequence="20"/>
+
+        <menuitem id="menu_property_all_tenant_contracts"
+                  name="Tenant Agreements"
+                  parent="menu_property_contracts_parent"
+                  action="action_tenant_contract"
+                  sequence="20"/>
+
+        <menuitem id="menu_property_expiring_contracts"
+                  name="Expiring Contracts"
+                  parent="menu_property_contracts_parent"
+                  action="action_tenant_contract_expiring"
+                  sequence="30"/>
+    </data>
+</odoo>

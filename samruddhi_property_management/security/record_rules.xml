@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ================= MULTI-COMPANY RECORD RULES ================= -->
+        <record id="rule_property_property_multi_company" model="ir.rule">
+            <field name="name">Property Multi-Company</field>
+            <field name="model_id" ref="model_property_property"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_property_unit_multi_company" model="ir.rule">
+            <field name="name">Unit Multi-Company</field>
+            <field name="model_id" ref="model_property_unit"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_landlord_contract_multi_company" model="ir.rule">
+            <field name="name">Landlord Contract Multi-Company</field>
+            <field name="model_id" ref="model_property_landlord_contract"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_tenant_contract_multi_company" model="ir.rule">
+            <field name="name">Tenant Contract Multi-Company</field>
+            <field name="model_id" ref="model_property_tenant_contract"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_rent_schedule_multi_company" model="ir.rule">
+            <field name="name">Rent Schedule Multi-Company</field>
+            <field name="model_id" ref="model_property_rent_schedule"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_landlord_payment_multi_company" model="ir.rule">
+            <field name="name">Landlord Payment Multi-Company</field>
+            <field name="model_id" ref="model_property_landlord_payment"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_security_deposit_multi_company" model="ir.rule">
+            <field name="name">Security Deposit Multi-Company</field>
+            <field name="model_id" ref="model_property_security_deposit"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_expense_multi_company" model="ir.rule">
+            <field name="name">Property Expense Multi-Company</field>
+            <field name="model_id" ref="model_property_expense"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_maintenance_multi_company" model="ir.rule">
+            <field name="name">Maintenance Request Multi-Company</field>
+            <field name="model_id" ref="model_property_maintenance_request"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- ================= PORTAL ISOLATION RULES ================= -->
+        <!-- Landlord Portal Rules -->
+        <record id="rule_portal_landlord_contract" model="ir.rule">
+            <field name="name">Portal Landlord Contract Isolation</field>
+            <field name="model_id" ref="model_property_landlord_contract"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('landlord_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <record id="rule_portal_landlord_payment" model="ir.rule">
+            <field name="name">Portal Landlord Payment Isolation</field>
+            <field name="model_id" ref="model_property_landlord_payment"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('landlord_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <record id="rule_portal_landlord_property" model="ir.rule">
+            <field name="name">Portal Landlord Property Isolation</field>
+            <field name="model_id" ref="model_property_property"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('landlord_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <!-- Tenant Portal Rules -->
+        <record id="rule_portal_tenant_contract" model="ir.rule">
+            <field name="name">Portal Tenant Contract Isolation</field>
+            <field name="model_id" ref="model_property_tenant_contract"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('tenant_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <record id="rule_portal_tenant_rent_schedule" model="ir.rule">
+            <field name="name">Portal Tenant Rent Schedule Isolation</field>
+            <field name="model_id" ref="model_property_rent_schedule"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('tenant_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <record id="rule_portal_tenant_deposit" model="ir.rule">
+            <field name="name">Portal Tenant Deposit Isolation</field>
+            <field name="model_id" ref="model_property_security_deposit"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('tenant_id', '=', user.partner_id.id)]</field>
+        </record>
+
+        <record id="rule_portal_tenant_maintenance" model="ir.rule">
+            <field name="name">Portal Tenant Maintenance Request</field>
+            <field name="model_id" ref="model_property_maintenance_request"/>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+            <field name="domain_force">[('tenant_id', '=', user.partner_id.id)]</field>
+        </record>
+    </data>
+</odoo>

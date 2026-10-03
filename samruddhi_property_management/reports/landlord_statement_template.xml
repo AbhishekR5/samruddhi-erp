@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_landlord_statement_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="landlord">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2 class="text-primary border-bottom pb-2">Landlord Statement of Account</h2>
+                            <div class="row mt-3 mb-4">
+                                <div class="col-6">
+                                    <h4 t-field="landlord.name"/>
+                                    <p class="mb-1" t-if="landlord.pan_number"><strong>PAN:</strong> <span t-field="landlord.pan_number"/></p>
+                                    <p class="mb-1" t-if="landlord.gstin_number"><strong>GSTIN:</strong> <span t-field="landlord.gstin_number"/></p>
+                                    <p class="mb-1"><strong>Phone:</strong> <span t-field="landlord.phone"/></p>
+                                    <p class="mb-1"><strong>Email:</strong> <span t-field="landlord.email"/></p>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <p class="mb-1"><strong>Statement Date:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d %B %Y')"/></p>
+                                    <div class="border p-2 bg-light rounded text-end mt-2">
+                                        <div class="text-muted small">Outstanding Payable to Landlord:</div>
+                                        <div class="fs-4 fw-bold text-danger">
+                                            <span t-field="landlord.total_landlord_payable" t-options='{"widget": "monetary", "display_currency": landlord.currency_id}'/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contracts -->
+                            <h4 class="mt-4 mb-2">Agreements / Contracts with Samruddhi</h4>
+                            <table class="table table-sm table-striped border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Contract Ref</th>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Monthly Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="landlord.landlord_contract_ids" t-as="contract">
+                                        <td><span t-field="contract.name"/></td>
+                                        <td><span t-field="contract.property_id.name"/></td>
+                                        <td><span t-field="contract.contract_type"/></td>
+                                        <td><span t-field="contract.start_date"/></td>
+                                        <td><span t-field="contract.end_date"/></td>
+                                        <td><span t-field="contract.monthly_amount" t-options='{"widget": "monetary", "display_currency": landlord.currency_id}'/></td>
+                                        <td><span t-field="contract.state"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Payment Schedules -->
+                            <h4 class="mt-4 mb-2">Disbursement Schedule &amp; History</h4>
+                            <table class="table table-sm table-striped border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ref</th>
+                                        <th>Period</th>
+                                        <th>Due Date</th>
+                                        <th>Amount Due</th>
+                                        <th>Amount Paid</th>
+                                        <th>Balance Owed</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="landlord.landlord_payment_ids" t-as="pay">
+                                        <td><span t-field="pay.name"/></td>
+                                        <td><span t-field="pay.period_start"/> to <span t-field="pay.period_end"/></td>
+                                        <td><span t-field="pay.due_date"/></td>
+                                        <td><span t-field="pay.amount" t-options='{"widget": "monetary", "display_currency": landlord.currency_id}'/></td>
+                                        <td><span t-field="pay.paid_amount" t-options='{"widget": "monetary", "display_currency": landlord.currency_id}'/></td>
+                                        <td><span t-field="pay.balance_amount" t-options='{"widget": "monetary", "display_currency": landlord.currency_id}'/></td>
+                                        <td><span t-field="pay.state"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
